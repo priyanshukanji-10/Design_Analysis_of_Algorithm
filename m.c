@@ -1,27 +1,39 @@
-#include <windows.h>
 #include <stdio.h>
-void swap(long *a, long *b)
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+#include "random.h"
+
+double getTime()
 {
-    long tmp = *a;
-    *a = *b;
-    *b = tmp;
+    LARGE_INTEGER t, freq;
+    QueryPerformanceCounter(&t);
+    QueryPerformanceFrequency(&freq);
+    return (double)t.QuadPart / (double)freq.QuadPart;
 }
+
+long swap(long *a, long *b)
+{
+    long c = *a;
+    *a = *b;
+    *b = c;
+}
+
 long partition(long arr[], long lb, long ub)
 {
-    long start = lb;
-    long end = ub;
+    long start = lb, end = ub;
     long pivot = arr[lb];
     while (start < end)
     {
-        while (arr[start] <= pivot && start <= ub)
+        while (pivot >= arr[start] && start < ub)
         {
             start++;
         }
-        while (arr[end] > pivot && end >= lb)
+        while (pivot < arr[end] && end > lb)
         {
             end--;
         }
-        if (end > start)
+        if (start < end)
         {
             swap(&arr[start], &arr[end]);
         }
@@ -30,23 +42,32 @@ long partition(long arr[], long lb, long ub)
     return end;
 }
 
-void quickSort(long arr[], long lb, long ub)
+long quickSort(long arr[], long ub, long lb)
 {
-    if (lb < ub)
+    if (ub > lb)
     {
-        long pi = partition(arr, lb, ub);
-        quickSort(arr, lb, pi - 1);
-        quickSort(arr, pi + 1, ub);
+        {
+            long pi = partition(arr, ub, lb);
+            quickSort(arr, lb, pi - 1);
+            quickSort(arr, pi + 1, ub);
+        }
     }
-}
 
-void main()
-{
-    long arr[] = {78, 56, 8, 1, 32};
-    long n = sizeof(arr) / sizeof(arr[0]), i;
-    quickSort(arr, 0, n - 1);
-    for (i = 0; i < n; i++)
+    void main()
     {
-        printf("%ld ", arr[i]);
+        long n;
+        printf("Enter number of elements: ");
+        scanf("%ld", &n);
+        long *arr = newData(n), i;
+
+        double start = getTime();
+        quickSort(arr, 0, n - 1);
+        double end = getTime();
+
+        for (i = 0; i < n; i++)
+        {
+            printf("%ld ", arr[i]);
+        }
+        double exeTime = (double)(end - start);
+        printf("\nExecution time is : %lf", exeTime);
     }
-}
