@@ -1,73 +1,77 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <windows.h>
-#include "random.h"
 
-double getTime()
+void merge(int arr[], int lb, int ub, int m)
 {
-    LARGE_INTEGER t, freq;
-    QueryPerformanceCounter(&t);
-    QueryPerformanceFrequency(&freq);
-    return (double)t.QuadPart / (double)freq.QuadPart;
+    int n1 = m - lb + 1;
+    int n2 = ub - m;
+    int l[n1], r[n2];
+    int i, j;
+    for (i = 0; i < n1; i++)
+    {
+        l[i] = arr[lb + i];
+    }
+    for (j = 0; j < n2; j++)
+    {
+        r[j] = arr[m + 1 + j];
+    }
+    i = 0;
+    j = 0;
+    int k = lb;
+    while (i < n1 && j < n2)
+    {
+        if (r[j] < l[i])
+        {
+            arr[k] = r[j];
+            j++;
+        }
+        else
+        {
+            arr[k] = l[i];
+            i++;
+        }
+        k++;
+    }
+    while (i < n1)
+    {
+        arr[k] = l[i];
+        k++;
+        i++;
+    }
+    while (j < n2)
+    {
+        arr[k] = r[j];
+        k++;
+        j++;
+    }
 }
 
-long swap(long *a, long *b)
+void mergeSort(int arr[], int lb, int ub)
 {
-    long c = *a;
-    *a = *b;
-    *b = c;
+    if (lb < ub)
+    {
+        int m = lb + (ub - lb) / 2;
+        mergeSort(arr, lb, m);
+        mergeSort(arr, m + 1, ub);
+        merge(arr, lb, ub, m);
+    }
 }
 
-long partition(long arr[], long lb, long ub)
+int main()
 {
-    long start = lb, end = ub;
-    long pivot = arr[lb];
-    while (start < end)
-    {
-        while (pivot >= arr[start] && start < ub)
-        {
-            start++;
-        }
-        while (pivot < arr[end] && end > lb)
-        {
-            end--;
-        }
-        if (start < end)
-        {
-            swap(&arr[start], &arr[end]);
-        }
-    }
-    swap(&arr[lb], &arr[end]);
-    return end;
+    int n, i;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    int arr[n];
+    printf("Enter %d elements:\n", n);
+    for (i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    mergeSort(arr, 0, n - 1);
+
+    printf("Sorted array:\n");
+    for (i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+
+    return 0;
 }
-
-long quickSort(long arr[], long ub, long lb)
-{
-    if (ub > lb)
-    {
-        {
-            long pi = partition(arr, ub, lb);
-            quickSort(arr, lb, pi - 1);
-            quickSort(arr, pi + 1, ub);
-        }
-    }
-
-    void main()
-    {
-        long n;
-        printf("Enter number of elements: ");
-        scanf("%ld", &n);
-        long *arr = newData(n), i;
-
-        double start = getTime();
-        quickSort(arr, 0, n - 1);
-        double end = getTime();
-
-        for (i = 0; i < n; i++)
-        {
-            printf("%ld ", arr[i]);
-        }
-        double exeTime = (double)(end - start);
-        printf("\nExecution time is : %lf", exeTime);
-    }
